@@ -24,6 +24,13 @@ Esta é a **v3.1 de teste** para validar a migração do sistema antes de reescr
 - comprovantes/fotos são salvos em **base64** no armazenamento do app (bom para teste, não para centenas de imagens)
 - esta versão serve para **validar fluxo e UX**, não para ser a arquitetura final
 - a versão realmente robusta virá com **Kotlin + Room + telas nativas**
+## Imagens do app
+
+ # ![Tela principal]({C4DE8FD4-8E7D-4F8D-BBEC-A0B3D8DF1C17}.png)
+
+ # ![Menu customizável]({03C864DE-6C0D-4B72-BFB7-F5EE87FCC684}.png)
+
+ # ![Gerar e exportar relatórios]({DFAC125C-5397-4402-A3F1-344590A352A4}.png)
 
 ## Estrutura
 - `android_offline_app/` → projeto Android Studio
