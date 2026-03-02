@@ -1,0 +1,317 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#0f172a" />
+  <title>Salão Financeiro Offline</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="login-screen" class="login-shell">
+    <div class="login-card">
+      <div class="brand-badge" id="login-brand-badge">SF</div>
+      <img id="login-logo" class="login-logo hidden" alt="Logo do salão" />
+      <h1 id="login-salon-name">Salão Financeiro</h1>
+      <p>Versão offline híbrida para validar a migração antes do app nativo.</p>
+      <form id="login-form" class="stack">
+        <label>
+          Usuário
+          <input type="text" id="login-username" value="admin" required />
+        </label>
+        <label>
+          Senha
+          <input type="password" id="login-password" value="admin123" required />
+        </label>
+        <button type="submit" class="btn primary wide">Entrar</button>
+      </form>
+
+      <form id="pin-form" class="stack hidden">
+        <label>
+          PIN (4 dígitos)
+          <input type="password" id="login-pin" inputmode="numeric" pattern="\d{4}" maxlength="4" placeholder="••••" />
+        </label>
+        <button type="submit" class="btn primary wide">Entrar</button>
+        <button type="button" class="btn ghost wide" id="use-userpass-btn">Usar usuário/senha</button>
+      </form>
+
+      <small id="login-error" class="error-text hidden">Usuário ou senha inválidos.</small>
+    </div>
+  </div>
+
+  <div id="app-shell" class="app-shell hidden">
+    <div id="menu-overlay" class="menu-overlay"></div>
+
+    <aside id="sidebar" class="sidebar">
+      <div class="sidebar-header">
+        <div class="brand-badge small" id="sidebar-brand-badge">SF</div>
+        <img id="sidebar-logo" class="sidebar-logo hidden" alt="Logo" />
+        <div>
+          <strong id="sidebar-salon-name">Salão Financeiro</strong>
+          <span>Offline v3</span>
+        </div>
+      </div>
+
+      <nav class="nav-list">
+        <button class="nav-item active" data-screen="dashboard">Dashboard</button>
+        <button class="nav-item" data-screen="services">Serviços</button>
+        <button class="nav-item" data-screen="attendances">Atendimentos</button>
+        <button class="nav-item" data-screen="expenses">Despesas</button>
+        <button class="nav-item" data-screen="products">Produtos</button>
+        <button class="nav-item" data-screen="collaborators">Colaboradores</button>
+        <button class="nav-item" data-screen="report">Relatório</button>
+        <button class="nav-item" data-screen="import">Importar</button>
+        <button class="nav-item" data-screen="settings">Configurações</button>
+      </nav>
+
+      <button id="logout-btn" class="btn ghost wide">Sair</button>
+    </aside>
+
+    <main class="main-shell">
+      <header class="topbar">
+        <div class="topbar-left">
+          <button id="menu-toggle" class="icon-btn" aria-label="Abrir menu">☰</button>
+          <img id="topbar-logo" class="topbar-logo hidden" alt="Logo" />
+          <div class="title-wrap">
+            <h2 id="topbar-title">Dashboard</h2>
+            <span id="topbar-subtitle">Resumo do mês atual</span>
+          </div>
+        </div>
+        <div class="topbar-right">
+          <span id="native-chip" class="chip">Web local</span>
+        </div>
+      </header>
+
+      <section id="screen-dashboard" class="screen active">
+        <div class="toolbar">
+          <label>
+            Mês
+            <input type="month" id="dashboard-month" />
+          </label>
+          <button class="btn secondary" id="refresh-dashboard">Atualizar</button>
+        </div>
+        <div id="dashboard-cards" class="card-grid"></div>
+        <div class="two-col">
+          <div class="panel">
+            <h3>Serviços no período</h3>
+            <div id="dashboard-services-breakdown"></div>
+          </div>
+          <div class="panel">
+            <h3>Colaboradores no período</h3>
+            <div id="dashboard-collab-breakdown"></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="screen-services" class="screen">
+        <div class="panel">
+          <h3>Cadastro de serviços</h3>
+          <form id="service-form" class="grid-form">
+            <input type="hidden" id="service-id" />
+            <label>Nome<input type="text" id="service-name" required /></label>
+            <label>Categoria<input type="text" id="service-category" placeholder="Cabelo, unhas..." /></label>
+            <label>Preço padrão<input type="number" step="0.01" id="service-price" required /></label>
+            <label>Comissão (%)<input type="number" step="0.01" id="service-commission" required /></label>
+            <label>Observações<input type="text" id="service-notes" /></label>
+            <div class="form-actions">
+              <button type="submit" class="btn primary">Salvar serviço</button>
+              <button type="button" class="btn ghost" data-reset-form="service-form">Limpar</button>
+            </div>
+          </form>
+        </div>
+        <div class="panel">
+          <h3>Lista de serviços</h3>
+          <div id="services-list" class="record-list"></div>
+        </div>
+      </section>
+
+      <section id="screen-collaborators" class="screen">
+        <div class="panel">
+          <h3>Cadastro de colaboradores</h3>
+          <form id="collaborator-form" class="grid-form">
+            <input type="hidden" id="collaborator-id" />
+            <label>Nome<input type="text" id="collaborator-name" required /></label>
+            <label>Função<input type="text" id="collaborator-role" required /></label>
+            <label>Comissão padrão (%)<input type="number" step="0.01" id="collaborator-commission" required /></label>
+            <label>Contato<input type="text" id="collaborator-contact" /></label>
+            <label>Status
+              <select id="collaborator-status">
+                <option value="ativo">Ativo</option>
+                <option value="inativo">Inativo</option>
+              </select>
+            </label>
+            <div class="form-actions">
+              <button type="submit" class="btn primary">Salvar colaborador</button>
+              <button type="button" class="btn ghost" data-reset-form="collaborator-form">Limpar</button>
+            </div>
+          </form>
+        </div>
+        <div class="panel">
+          <h3>Lista de colaboradores</h3>
+          <div id="collaborators-list" class="record-list"></div>
+        </div>
+      </section>
+
+      <section id="screen-attendances" class="screen">
+        <div class="panel">
+          <h3>Lançar atendimento</h3>
+          <form id="attendance-form" class="grid-form">
+            <input type="hidden" id="attendance-id" />
+            <label>Data<input type="date" id="attendance-date" required /></label>
+            <label>Cliente<input type="text" id="attendance-client" /></label>
+            <label>Serviço<select id="attendance-service" required></select></label>
+            <label>Colaborador<select id="attendance-collaborator" required></select></label>
+            <label>Valor cobrado<input type="text" id="attendance-amount" inputmode="decimal" placeholder="0,00" required /></label>
+            <label>Forma de pagamento
+              <select id="attendance-payment">
+                <option>PIX</option>
+                <option>Dinheiro</option>
+                <option>Cartão</option>
+                <option>Transferência</option>
+              </select>
+            </label>
+            <label>Comissão calculada<input type="number" step="0.01" id="attendance-commission" required /></label>
+            <label>Valor do salão<input type="number" step="0.01" id="attendance-salon" required /></label>
+            <label>Observações<input type="text" id="attendance-notes" /></label>
+            <label>Foto/comprovante<input type="file" id="attendance-proof" accept="image/*,.pdf" /></label>
+            <div class="preview-box" id="attendance-proof-preview"></div>
+            <div class="form-actions">
+              <button type="submit" class="btn primary">Salvar atendimento</button>
+              <button type="button" class="btn ghost" data-reset-form="attendance-form">Limpar</button>
+            </div>
+          </form>
+        </div>
+        <div class="panel">
+          <h3>Atendimentos</h3>
+          <div id="attendances-list" class="record-list"></div>
+        </div>
+      </section>
+
+      <section id="screen-expenses" class="screen">
+        <div class="panel">
+          <h3>Lançar despesa</h3>
+          <form id="expense-form" class="grid-form">
+            <input type="hidden" id="expense-id" />
+            <label>Data<input type="date" id="expense-date" required /></label>
+            <label>Categoria<input type="text" id="expense-category" required /></label>
+            <label>Descrição<input type="text" id="expense-description" required /></label>
+            <label>Valor<input type="text" id="expense-amount" inputmode="decimal" placeholder="0,00" required /></label>
+            <label>Forma de pagamento
+              <select id="expense-payment">
+                <option>PIX</option>
+                <option>Dinheiro</option>
+                <option>Cartão</option>
+                <option>Boleto</option>
+              </select>
+            </label>
+            <label>Fornecedor<input type="text" id="expense-vendor" /></label>
+            <label>Comprovante<input type="file" id="expense-proof" accept="image/*,.pdf" /></label>
+            <div class="preview-box" id="expense-proof-preview"></div>
+            <div class="form-actions">
+              <button type="submit" class="btn primary">Salvar despesa</button>
+              <button type="button" class="btn ghost" data-reset-form="expense-form">Limpar</button>
+            </div>
+          </form>
+        </div>
+        <div class="panel">
+          <h3>Despesas</h3>
+          <div id="expenses-list" class="record-list"></div>
+        </div>
+      </section>
+
+      <section id="screen-products" class="screen">
+        <div class="panel">
+          <h3>Registrar produto</h3>
+          <form id="product-form" class="grid-form">
+            <input type="hidden" id="product-id" />
+            <label>Data<input type="date" id="product-date" required /></label>
+            <label>Produto<input type="text" id="product-name" required /></label>
+            <label>Categoria<input type="text" id="product-category" /></label>
+            <label>Quantidade<input type="number" step="1" min="1" id="product-quantity" required /></label>
+            <label>Custo unitário<input type="text" id="product-unit-cost" inputmode="decimal" placeholder="0,00" required /></label>
+            <label>Fornecedor<input type="text" id="product-vendor" /></label>
+            <label>Observações<input type="text" id="product-notes" /></label>
+            <div class="form-actions">
+              <button type="submit" class="btn primary">Salvar produto</button>
+              <button type="button" class="btn ghost" data-reset-form="product-form">Limpar</button>
+            </div>
+          </form>
+        </div>
+        <div class="panel">
+          <h3>Produtos comprados</h3>
+          <div id="products-list" class="record-list"></div>
+        </div>
+      </section>
+
+      <section id="screen-report" class="screen">
+        <div class="panel">
+          <h3>Relatório mensal</h3>
+          <div class="toolbar">
+            <label>Mês<input type="month" id="report-month" /></label>
+            <button class="btn secondary" id="generate-report">Gerar</button>
+            <button class="btn primary" id="export-csv-btn">Exportar CSV</button>
+            <button class="btn ghost" id="export-json-btn">Backup JSON</button>
+          </div>
+          <div id="report-summary" class="report-summary"></div>
+          <div class="two-col">
+            <div class="panel">
+              <h4>Atendimentos do período</h4>
+              <div id="report-attendances"></div>
+            </div>
+            <div class="panel">
+              <h4>Despesas e produtos</h4>
+              <div id="report-expenses"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="screen-import" class="screen">
+        <div class="panel">
+          <h3>Importar dados</h3>
+          <p>Esta v3 usa <strong>backup JSON</strong> para restaurar a base local. Importação de Excel fica para a fase nativa.</p>
+          <div class="stack">
+            <label>Selecionar backup JSON
+              <input type="file" id="import-json-file" accept="application/json,.json" />
+            </label>
+            <label>Ou colar JSON manualmente
+              <textarea id="import-json-text" rows="8" placeholder="Cole aqui um backup JSON"></textarea>
+            </label>
+            <div class="form-actions">
+              <button class="btn primary" id="import-json-btn">Importar backup</button>
+              <button class="btn ghost" id="seed-demo-btn">Carregar dados demo</button>
+            </div>
+          </div>
+          <small>Ao importar, a base local atual será substituída.</small>
+        </div>
+      </section>
+
+      <section id="screen-settings" class="screen">
+        <div class="panel">
+          <h3>Configurações locais</h3>
+          <form id="settings-form" class="grid-form">
+            <label>Nome do salão<input type="text" id="settings-salon-name" required /></label>
+            <label>Cor principal<input type="color" id="settings-theme-color" /></label>
+            <label>Logo do salão (foto)
+              <input type="file" id="settings-logo" accept="image/*" />
+            </label>
+            <div class="preview-box" id="settings-logo-preview"></div>
+            <label>Definir/alterar PIN (4 dígitos)
+              <input type="password" id="settings-pin" inputmode="numeric" pattern="\d{4}" maxlength="4" placeholder="••••" />
+            </label>
+            <label>Usuário admin<input type="text" id="settings-username" required /></label>
+            <label>Senha admin<input type="password" id="settings-password" required /></label>
+            <div class="form-actions">
+              <button type="submit" class="btn primary">Salvar configurações</button>
+            </div>
+          </form>
+        </div>
+      </section>
+
+      <div id="toast" class="toast hidden"></div>
+    </main>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
